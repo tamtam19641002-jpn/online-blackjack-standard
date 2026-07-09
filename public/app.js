@@ -203,6 +203,36 @@ function renderHand(cards) {
   return `<div class="hand">${cards.map(card => card ? renderCard(card) : renderCard({}, true)).join('')}</div>`;
 }
 
+function renderStats() {
+  if (!state?.stats) return '';
+  const stats = state.stats;
+  const parts = [`${stats.rounds}戦`, `${stats.win}勝`, `${stats.lose}敗`];
+  if (stats.push) parts.push(`${stats.push}分`);
+  if (stats.blackjack) parts.push(`BJ ${stats.blackjack}`);
+  return `<section class="summary-strip">
+    <div><span>通算</span><strong>${parts.join(' ')}</strong></div>
+    <div><span>現在</span><strong>第${state.roundNumber || 1}戦</strong></div>
+  </section>`;
+}
+
+function renderHistory() {
+  const history = state?.history || [];
+  if (!history.length) return '';
+  const rows = history.slice(-6).reverse().map(round => {
+    const mine = round.results.find(result => result.playerId === myId());
+    if (!mine) return '';
+    const score = `${mine.value}対${round.dealerValue}`;
+    const label = outcomeLabel[mine.outcome] || mine.outcome;
+    const icon = outcomeIcon[mine.outcome] || '•';
+    const dealerNote = round.dealerBust ? ' / 親バースト' : '';
+    return `<li><strong>第${round.round}戦</strong><span>${score}${dealerNote}</span><b class="${mine.outcome}">${icon} ${escapeHtml(label)}</b></li>`;
+  }).join('');
+  return `<section class="round-history">
+    <h3>対戦履歴</h3>
+    <ul>${rows}</ul>
+  </section>`;
+}
+
 function renderPlayer(player) {
   const active = state.turnPlayerId === player.id && !state.finished;
   const outcome = player.outcome ? `<span class="result-chip ${player.outcome}">${outcomeIcon[player.outcome]} ${outcomeLabel[player.outcome]}</span>` : '';
@@ -238,6 +268,7 @@ function renderGame() {
         <button class="danger" onclick="resetGame()">ロビーに戻る</button>
       </div>
     </div>
+    ${renderStats()}
     <section class="dealer">
       <div class="player-head"><h3>ディーラー</h3><strong>${state.dealer.value ?? '?'}</strong></div>
       ${renderHand(state.dealer.hand)}
@@ -247,7 +278,8 @@ function renderGame() {
       <button onclick="hit()" ${controlsDisabled}>ヒット<br><small>1枚引く</small></button>
       <button onclick="stand()" ${controlsDisabled}>スタンド<br><small>止める</small></button>
     </div>
-    ${state.finished ? `<section class="result"><h2>${escapeHtml(headline)}</h2><p>同じルームのまま続けるか、ロビーに戻るか選べます。</p><div class="result-actions"><button onclick="playAgain()">同じメンバーでもう一度</button><button class="ghost" onclick="resetGame()">ロビーに戻る</button></div></section>` : ''}
+    ${state.finished ? `<section class="result"><h2>${escapeHtml(headline)}</h2><p>第${state.roundNumber || 1}戦の結果です。同じルームのまま続けるか、ロビーに戻るか選べます。</p><div class="result-actions"><button onclick="playAgain()">同じメンバーでもう一度</button><button class="ghost" onclick="resetGame()">ロビーに戻る</button></div></section>` : ''}
+    ${renderHistory()}
     <div class="players">${state.players.map(renderPlayer).join('')}</div>
   </section>`;
 }

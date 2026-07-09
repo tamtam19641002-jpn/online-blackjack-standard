@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer, WebSocket } = require('ws');
-const { createGame, hit, stand, publicState } = require('./src/game');
+const { createGame, hit, stand, publicState, handValue } = require('./src/game');
 
 const PORT = Number(process.env.PORT || 3000);
 const publicDir = path.join(__dirname, 'public');
@@ -75,10 +75,16 @@ function attach(socket, room, player) {
 
 function broadcastRoom(room) {
   for (const player of room.players.values()) {
+    const state = publicState(room.game, player.id);
+    if (state) {
+      state.roundNumber = room.roundNumber || 0;
+      state.history = room.history || [];
+      state.stats = buildStats(room, player.id);
+    }
     send(player.socket, {
       type: 'state',
       room: roomSummary(room),
-      state: publicState(room.game, player.id),
+      state,
       lobby: lobby(room),
       isOwner: player.id === room.ownerId
     });
@@ -97,8 +103,52 @@ function resetRoom(room) {
 }
 
 function startRound(room) {
+  room.roundNumber = (room.roundNumber || 0) + 1;
   room.game = createGame([...room.players.values()].map(member => ({ id: member.id, name: member.name })));
+  room.game.roundNumber = room.roundNumber;
+  room.game.recorded = false;
   room.status = 'playing';
+}
+
+function buildStats(room, viewerId) {
+  const stats = { rounds: 0, win: 0, lose: 0, push: 0, blackjack: 0 };
+  for (const round of room.history || []) {
+    const result = round.results.find(item => item.playerId === viewerId);
+    if (!result) continue;
+    stats.rounds += 1;
+    if (result.outcome === 'blackjack') {
+      stats.blackjack += 1;
+      stats.win += 1;
+    } else if (result.outcome === 'win') {
+      stats.win += 1;
+    } else if (result.outcome === 'lose') {
+      stats.lose += 1;
+    } else if (result.outcome === 'push') {
+      stats.push += 1;
+    }
+  }
+  return stats;
+}
+
+function recordFinishedRound(room) {
+  if (!room.game?.finished || room.game.recorded) return;
+  const dealer = handValue(room.game.dealer.hand);
+  const round = {
+    round: room.game.roundNumber || room.roundNumber || 1,
+    dealerValue: dealer.total,
+    dealerBust: dealer.bust,
+    results: room.game.players.map(player => {
+      const value = handValue(player.hand).total;
+      return {
+        playerId: player.id,
+        name: player.name,
+        value,
+        outcome: player.outcome
+      };
+    })
+  };
+  room.history = [...(room.history || []), round].slice(-20);
+  room.game.recorded = true;
 }
 
 function getContext(socket) {
@@ -121,7 +171,7 @@ wss.on('connection', socket => {
         if (!name) throw new Error('名前を入力してください');
         const id = newRoomId();
         const pid = newPlayerId();
-        const room = { id, ownerId: pid, players: new Map(), status: 'waiting', game: null };
+        const room = { id, ownerId: pid, players: new Map(), status: 'waiting', game: null, roundNumber: 0, history: [] };
         const player = { id: pid, name, socket };
         room.players.set(pid, player);
         rooms.set(id, room);
@@ -174,7 +224,10 @@ wss.on('connection', socket => {
         throw new Error('不明な操作です');
       }
 
-      if (room.game?.finished) room.status = 'finished';
+      if (room.game?.finished) {
+        room.status = 'finished';
+        recordFinishedRound(room);
+      }
       broadcastRoom(room);
     } catch (error) {
       fail(socket, error.message);
