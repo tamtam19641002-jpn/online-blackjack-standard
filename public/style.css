@@ -140,11 +140,16 @@ input {
   gap: 16px;
 }
 
-.row-title, .room-row, .game-head, .player-head, .controls {
+.row-title, .room-row, .game-head, .player-head, .controls, .game-actions, .result-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.game-actions, .result-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .room-row {
@@ -271,6 +276,12 @@ footer {
   .game-head, .row-title, .room-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .game-actions, .result-actions {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
   }
 
   .card {

@@ -96,6 +96,11 @@ function resetRoom(room) {
   broadcastRoomList();
 }
 
+function startRound(room) {
+  room.game = createGame([...room.players.values()].map(member => ({ id: member.id, name: member.name })));
+  room.status = 'playing';
+}
+
 function getContext(socket) {
   const room = rooms.get(socket.roomId);
   const player = room?.players.get(socket.playerId);
@@ -154,12 +159,14 @@ wss.on('connection', socket => {
       if (data.type === 'startRoom') {
         if (room.ownerId !== player.id) throw new Error('ルーム作成者だけが開始できます');
         if (room.status !== 'waiting') throw new Error('すでに開始しています');
-        room.game = createGame([...room.players.values()].map(member => ({ id: member.id, name: member.name })));
-        room.status = 'playing';
+        startRound(room);
       } else if (data.type === 'hit') {
         hit(room.game, player.id);
       } else if (data.type === 'stand') {
         stand(room.game, player.id);
+      } else if (data.type === 'playAgain') {
+        if (room.status !== 'finished') throw new Error('ゲーム終了後に選べます');
+        startRound(room);
       } else if (data.type === 'resetGame') {
         resetRoom(room);
         return;

@@ -126,6 +126,10 @@ function resetGame() {
   send({ type: 'resetGame' });
 }
 
+function playAgain() {
+  send({ type: 'playAgain' });
+}
+
 function showRules() {
   alert(`ブラックジャックのルール
 
@@ -229,7 +233,10 @@ function renderGame() {
         <h2>${escapeHtml(headline)}</h2>
         <p>${escapeHtml(state.lastAction || '')}</p>
       </div>
-      <button class="danger" onclick="resetGame()">ロビーに戻る</button>
+      <div class="game-actions">
+        ${state.finished ? '<button onclick="playAgain()">もう一度遊ぶ</button>' : ''}
+        <button class="danger" onclick="resetGame()">ロビーに戻る</button>
+      </div>
     </div>
     <section class="dealer">
       <div class="player-head"><h3>ディーラー</h3><strong>${state.dealer.value ?? '?'}</strong></div>
@@ -240,7 +247,7 @@ function renderGame() {
       <button onclick="hit()" ${controlsDisabled}>ヒット<br><small>1枚引く</small></button>
       <button onclick="stand()" ${controlsDisabled}>スタンド<br><small>止める</small></button>
     </div>
-    ${state.finished ? `<section class="result"><h2>${escapeHtml(headline)}</h2><p>もう一度遊ぶ時はロビーに戻って新しいルームを作ってください。</p><button onclick="resetGame()">ロビーに戻る</button></section>` : ''}
+    ${state.finished ? `<section class="result"><h2>${escapeHtml(headline)}</h2><p>同じルームのまま続けるか、ロビーに戻るか選べます。</p><div class="result-actions"><button onclick="playAgain()">同じメンバーでもう一度</button><button class="ghost" onclick="resetGame()">ロビーに戻る</button></div></section>` : ''}
     <div class="players">${state.players.map(renderPlayer).join('')}</div>
   </section>`;
 }
@@ -258,6 +265,7 @@ window.joinRoom = joinRoom;
 window.startRoom = startRoom;
 window.hit = hit;
 window.stand = stand;
+window.playAgain = playAgain;
 window.resetGame = resetGame;
 window.send = send;
 
