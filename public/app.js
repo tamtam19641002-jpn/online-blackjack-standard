@@ -209,10 +209,10 @@ function renderStats() {
   const parts = [`${stats.rounds}戦`, `${stats.win}勝`, `${stats.lose}敗`];
   if (stats.push) parts.push(`${stats.push}分`);
   if (stats.blackjack) parts.push(`BJ ${stats.blackjack}`);
-  return `<section class="summary-strip">
-    <div><span>通算</span><strong>${parts.join(' ')}</strong></div>
+  return `<div class="summary-strip">
     <div><span>現在</span><strong>第${state.roundNumber || 1}戦</strong></div>
-  </section>`;
+    <div><span>通算</span><strong>${parts.join(' ')}</strong></div>
+  </div>`;
 }
 
 function renderHistory() {
@@ -227,10 +227,18 @@ function renderHistory() {
     const dealerNote = round.dealerBust ? ' / 親バースト' : '';
     return `<li><strong>第${round.round}戦</strong><span>${score}${dealerNote}</span><b class="${mine.outcome}">${icon} ${escapeHtml(label)}</b></li>`;
   }).join('');
-  return `<section class="round-history">
+  return `<div class="round-history">
     <h3>対戦履歴</h3>
     <ul>${rows}</ul>
-  </section>`;
+  </div>`;
+}
+
+function renderScorePanel() {
+  return `<aside class="score-panel">
+    <h3>あなたの戦績</h3>
+    ${renderStats()}
+    ${renderHistory() || '<p class="muted">まだ履歴はありません。</p>'}
+  </aside>`;
 }
 
 function renderPlayer(player) {
@@ -268,19 +276,22 @@ function renderGame() {
         <button class="danger" onclick="resetGame()">ロビーに戻る</button>
       </div>
     </div>
-    ${renderStats()}
-    <section class="dealer">
-      <div class="player-head"><h3>ディーラー</h3><strong>${state.dealer.value ?? '?'}</strong></div>
-      ${renderHand(state.dealer.hand)}
-      <p class="muted">${state.dealer.bust ? 'バースト' : state.finished ? '勝負！' : '2枚目は伏せ札'}</p>
-    </section>
-    <div class="controls">
-      <button onclick="hit()" ${controlsDisabled}>ヒット<br><small>1枚引く</small></button>
-      <button onclick="stand()" ${controlsDisabled}>スタンド<br><small>止める</small></button>
+    <div class="game-layout">
+      <div class="play-area">
+        <section class="dealer">
+          <div class="player-head"><h3>ディーラー</h3><strong>${state.dealer.value ?? '?'}</strong></div>
+          ${renderHand(state.dealer.hand)}
+          <p class="muted">${state.dealer.bust ? 'バースト' : state.finished ? '勝負！' : '2枚目は伏せ札'}</p>
+        </section>
+        <div class="controls">
+          <button onclick="hit()" ${controlsDisabled}>ヒット<br><small>1枚引く</small></button>
+          <button onclick="stand()" ${controlsDisabled}>スタンド<br><small>止める</small></button>
+        </div>
+        ${state.finished ? `<section class="result"><h2>${escapeHtml(headline)}</h2><p>第${state.roundNumber || 1}戦の結果です。同じルームのまま続けるか、ロビーに戻るか選べます。</p><div class="result-actions"><button onclick="playAgain()">同じメンバーでもう一度</button><button class="ghost" onclick="resetGame()">ロビーに戻る</button></div></section>` : ''}
+        <div class="players">${state.players.map(renderPlayer).join('')}</div>
+      </div>
+      ${renderScorePanel()}
     </div>
-    ${state.finished ? `<section class="result"><h2>${escapeHtml(headline)}</h2><p>第${state.roundNumber || 1}戦の結果です。同じルームのまま続けるか、ロビーに戻るか選べます。</p><div class="result-actions"><button onclick="playAgain()">同じメンバーでもう一度</button><button class="ghost" onclick="resetGame()">ロビーに戻る</button></div></section>` : ''}
-    ${renderHistory()}
-    <div class="players">${state.players.map(renderPlayer).join('')}</div>
   </section>`;
 }
 

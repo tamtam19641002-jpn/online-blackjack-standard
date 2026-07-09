@@ -69,7 +69,7 @@ input {
   padding: 12px 0 24px;
 }
 
-.hero, .panel, .box, .game, .dealer, .player-card, .result, .message, .summary-strip, .round-history {
+.hero, .panel, .box, .game, .dealer, .player-card, .result, .message, .summary-strip, .round-history, .score-panel {
   border-radius: 22px;
   background: var(--panel);
   box-shadow: var(--shadow);
@@ -129,7 +129,7 @@ input {
   padding: 12px;
 }
 
-.box, .dealer, .player-card, .result, .message, .round-history {
+.box, .dealer, .player-card, .result, .message, .round-history, .score-panel {
   margin-top: 10px;
   padding: 12px;
 }
@@ -157,8 +157,19 @@ input {
   padding: 12px 0;
 }
 
-.game-head h2, .player-head h3, .box h2, .round-history h3 {
+.game-head h2, .player-head h3, .box h2, .round-history h3, .score-panel h3 {
   margin: 0.1rem 0;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 240px);
+  gap: 10px;
+  align-items: start;
+}
+
+.play-area {
+  min-width: 0;
 }
 
 .room-row span, .muted {
@@ -219,10 +230,33 @@ input {
   font-size: 1rem;
 }
 
+.score-panel {
+  position: sticky;
+  top: 8px;
+  align-self: start;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.score-panel h3 {
+  color: var(--green);
+  font-size: 0.95rem;
+}
+
+.score-panel .round-history {
+  margin-top: 10px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .summary-strip {
   margin-top: 10px;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.9);
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .summary-strip span {
@@ -233,7 +267,12 @@ input {
 }
 
 .summary-strip strong {
-  font-size: clamp(18px, 4vw, 28px);
+  display: block;
+  border-radius: 14px;
+  padding: 0.35rem 0.5rem;
+  background: rgba(20, 130, 95, 0.1);
+  font-size: clamp(15px, 2.2vw, 20px);
+  line-height: 1.25;
 }
 
 .result {
@@ -248,20 +287,21 @@ input {
 
 .round-history ul {
   display: grid;
-  gap: 6px;
-  margin: 8px 0 0;
+  gap: 5px;
+  margin: 6px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .round-history li {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 8px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  align-items: stretch;
   border-radius: 14px;
-  padding: 8px 10px;
+  padding: 7px 8px;
   background: rgba(20, 130, 95, 0.08);
+  font-size: 0.86rem;
 }
 
 .round-history span {
@@ -269,6 +309,8 @@ input {
 }
 
 .round-history b {
+  display: inline-block;
+  justify-self: start;
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
   color: white;
@@ -331,6 +373,15 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .score-panel {
+    position: static;
+    order: -1;
+  }
+
   .game-head, .row-title, .room-row {
     align-items: stretch;
     flex-direction: column;
@@ -350,13 +401,19 @@ footer {
     min-height: 86px;
   }
 
-  .summary-strip, .round-history li {
-    grid-template-columns: 1fr;
+  .summary-strip {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
     align-items: stretch;
   }
 
-  .summary-strip {
-    flex-direction: column;
-    align-items: stretch;
+  .round-history ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .round-history ul {
+    grid-template-columns: 1fr;
   }
 }
