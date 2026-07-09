@@ -1,0 +1,283 @@
+:root {
+  --bg: #10251f;
+  --panel: rgba(255, 255, 255, 0.94);
+  --ink: #21342e;
+  --muted: #63756f;
+  --green: #14825f;
+  --gold: #f6c453;
+  --red: #d94c58;
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 20% 8%, rgba(246, 196, 83, 0.32), transparent 25%),
+    radial-gradient(circle at 90% 20%, rgba(65, 194, 142, 0.28), transparent 28%),
+    linear-gradient(135deg, #0d3128, #12352e 48%, #071a16);
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  min-height: 46px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.2rem;
+  color: white;
+  background: linear-gradient(135deg, var(--green), #21a77d);
+  box-shadow: 0 10px 24px rgba(20, 130, 95, 0.24);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+button.ghost {
+  color: var(--green);
+  background: white;
+}
+
+button.danger {
+  background: linear-gradient(135deg, #c0394b, var(--red));
+}
+
+input {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 0.35rem;
+  border: 2px solid rgba(20, 130, 95, 0.18);
+  border-radius: 16px;
+  padding: 0.7rem 0.9rem;
+}
+
+#app {
+  width: min(1160px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 20px 0 32px;
+}
+
+.hero, .panel, .box, .game, .dealer, .player-card, .result, .message {
+  border-radius: 28px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 250px;
+  padding: 36px;
+}
+
+.hero h1 {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: clamp(30px, 8vw, 66px);
+  line-height: 1;
+}
+
+.lead {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  font-size: clamp(16px, 3vw, 21px);
+}
+
+.eyebrow {
+  color: var(--green);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.fan {
+  position: absolute;
+  right: 34px;
+  bottom: 16px;
+  width: 340px;
+  height: 180px;
+  opacity: 0.94;
+}
+
+.fan-card {
+  position: absolute;
+  width: 110px;
+  border-radius: 12px;
+  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.24);
+}
+
+.fan-0 { right: 190px; bottom: 0; transform: rotate(-18deg); }
+.fan-1 { right: 125px; bottom: 20px; transform: rotate(-6deg); }
+.fan-2 { right: 60px; bottom: 14px; transform: rotate(7deg); }
+.fan-3 { right: 0; bottom: -2px; transform: rotate(18deg); }
+
+.panel, .game {
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.box, .dealer, .player-card, .result, .message {
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.action-grid, .players {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.row-title, .room-row, .game-head, .player-head, .controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.room-row {
+  border-top: 1px solid rgba(20, 130, 95, 0.14);
+  padding: 12px 0;
+}
+
+.room-row span, .muted {
+  color: var(--muted);
+}
+
+.dealer {
+  color: white;
+  background: linear-gradient(135deg, #18473b, #0d2c25);
+}
+
+.player-card.active {
+  outline: 4px solid rgba(246, 196, 83, 0.75);
+}
+
+.player-card.you {
+  background: linear-gradient(180deg, #ffffff, #f0fff8);
+}
+
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  min-height: 122px;
+}
+
+.card {
+  width: clamp(74px, 12vw, 112px);
+  aspect-ratio: 5 / 7;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.controls {
+  position: sticky;
+  bottom: 8px;
+  z-index: 3;
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+}
+
+.controls button {
+  flex: 1;
+  min-height: 64px;
+  font-size: 1.1rem;
+}
+
+.result {
+  text-align: center;
+  border: 3px solid rgba(246, 196, 83, 0.72);
+}
+
+.result h2 {
+  margin: 0.2rem 0;
+  font-size: clamp(28px, 7vw, 56px);
+}
+
+.result-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: 0.4rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  color: white;
+  background: var(--green);
+  font-weight: 900;
+}
+
+.result-chip.lose {
+  background: var(--red);
+}
+
+.result-chip.push {
+  background: #777;
+}
+
+footer {
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  #app {
+    width: min(100% - 16px, 720px);
+    padding-top: 8px;
+  }
+
+  .hero {
+    min-height: 230px;
+    padding: 22px;
+  }
+
+  .fan {
+    right: -18px;
+    bottom: 10px;
+    transform: scale(0.78);
+    transform-origin: right bottom;
+  }
+
+  .action-grid, .players {
+    grid-template-columns: 1fr;
+  }
+
+  .game-head, .row-title, .room-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .card {
+    width: clamp(66px, 22vw, 92px);
+  }
+
+  .hand {
+    min-height: 104px;
+  }
+}

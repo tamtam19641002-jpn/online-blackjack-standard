@@ -1,0 +1,13 @@
+{
+  "name": "blackjack-standard-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "スマホで遊びやすいオンラインブラックジャック",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
