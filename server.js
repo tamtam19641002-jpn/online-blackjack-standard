@@ -18,7 +18,8 @@ const mime = {
 };
 
 const server = http.createServer((req, res) => {
-  const requested = req.url === '/' ? '/index.html' : req.url.split('?')[0];
+  const pathname = req.url.split('?')[0];
+  const requested = pathname === '/' ? '/index.html' : pathname;
   const file = path.normalize(path.join(publicDir, requested));
   if (!file.startsWith(publicDir)) return res.writeHead(403).end('Forbidden');
   fs.readFile(file, (error, data) => {
