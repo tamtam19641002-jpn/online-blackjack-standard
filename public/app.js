@@ -14,6 +14,7 @@ const outcomeIcon = { win: '🎉', lose: '💥', push: '🤝', blackjack: '✨' 
 const cardImage = card => `/cards/${card.suit}_${card.rank}.jpg`;
 const backImage = '/cards/back.jpg';
 const mainUrl = 'https://tamtam-card-arcade.onrender.com/';
+window.setTimeout(() => document.getElementById('openingSplash')?.remove(), 1450);
 
 function connect() {
   socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
