@@ -13,6 +13,7 @@ const outcomeLabel = { win: '勝ち', lose: '負け', push: '引き分け', blac
 const outcomeIcon = { win: '🎉', lose: '💥', push: '🤝', blackjack: '✨' };
 const cardImage = card => `/cards/${card.suit}_${card.rank}.jpg`;
 const backImage = '/cards/back.jpg';
+const mainUrl = 'https://tamtam-card-arcade.onrender.com/';
 
 function connect() {
   socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
@@ -130,6 +131,10 @@ function playAgain() {
   send({ type: 'playAgain' });
 }
 
+function goMain() {
+  location.href = mainUrl;
+}
+
 function showRules() {
   alert(`ブラックジャックのルール
 
@@ -152,7 +157,10 @@ function renderTitle() {
     <p class="eyebrow">ONLINE CARD GAME</p>
     <h1>オンラインブラックジャック</h1>
     <p class="lead">21を超えずに、ディーラーより強い手を目指そう。</p>
-    <button class="ghost" onclick="showRules()">ルール説明</button>
+    <div class="hero-actions">
+      <button class="ghost" onclick="goMain()">メインへ戻る</button>
+      <button class="ghost" onclick="showRules()">ルール説明</button>
+    </div>
   </section>`;
 }
 
@@ -167,6 +175,7 @@ function renderLobby() {
   const joined = room && !state;
   return `<section class="panel lobby">
     <label>プレイヤー名<input id="playerName" value="${escapeHtml(myName)}" placeholder="名前を入力" maxlength="16" /></label>
+    <p class="muted small-note">名前はこの端末のブラウザにだけ保存されます。他の人には共有されません。</p>
     <div class="action-grid">
       <div class="box primary-action">
         <h2>すぐ遊ぶ</h2>
@@ -272,6 +281,7 @@ function renderGame() {
         <p>${escapeHtml(state.lastAction || '')}</p>
       </div>
       <div class="game-actions">
+        <button class="ghost" onclick="goMain()">メインへ戻る</button>
         ${state.finished ? '<button onclick="playAgain()">もう一度遊ぶ</button>' : ''}
         <button class="danger" onclick="resetGame()">ロビーに戻る</button>
       </div>
@@ -310,6 +320,7 @@ window.hit = hit;
 window.stand = stand;
 window.playAgain = playAgain;
 window.resetGame = resetGame;
+window.goMain = goMain;
 window.send = send;
 
 connect();
